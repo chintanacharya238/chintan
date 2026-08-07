@@ -3,22 +3,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
-
-run_compose() {
-  if sg docker -c 'docker compose version' >/dev/null 2>&1; then
-    sg docker -c "docker compose $*"
-  else
-    sudo docker compose "$@"
-  fi
-}
-
-wpcli() {
-  if sg docker -c 'docker compose version' >/dev/null 2>&1; then
-    sg docker -c "docker compose run --rm --entrypoint wp wpcli $(printf '%q ' "$@")"
-  else
-    sudo docker compose run --rm --entrypoint wp wpcli "$@"
-  fi
-}
+# shellcheck source=docker-lib.sh
+source "${ROOT_DIR}/scripts/docker-lib.sh"
 
 SITE_URL="${WP_SITE_URL:-http://localhost:8080}"
 

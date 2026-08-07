@@ -26,6 +26,7 @@ RUN apt-get update \
     && mkdir -p /etc/docker \
     && printf '%s\n' '{' '  "storage-driver": "fuse-overlayfs"' '}' > /etc/docker/daemon.json \
     && update-alternatives --set iptables /usr/sbin/iptables-legacy \
-    && update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    && update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy \
+    && usermod -aG docker ubuntu
 
 USER ubuntu
