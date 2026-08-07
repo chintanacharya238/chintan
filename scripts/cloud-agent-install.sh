@@ -8,6 +8,6 @@ source "${ROOT_DIR}/scripts/docker-lib.sh"
 
 ensure_docker || { echo "Docker daemon is not available." >&2; exit 1; }
 
-run_compose down --remove-orphans 2>/dev/null || true
+run_compose down -v --remove-orphans 2>/dev/null || true
 run_compose pull db wordpress wpcli
 "${ROOT_DIR}/scripts/bootstrap-wordpress.sh"
