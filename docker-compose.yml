@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uwordpress", "-pwordpress"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  wordpress:
+    image: wordpress:php8.2-apache
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./crh-areas:/var/www/html/wp-content/plugins/crh-areas
+    depends_on:
+      db:
+        condition: service_healthy
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    user: "33:33"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./crh-areas:/var/www/html/wp-content/plugins/crh-areas
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  wordpress_data:
