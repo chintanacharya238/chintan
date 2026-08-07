@@ -13,8 +13,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uwordpress", "-pwordpress"]
       interval: 5s
       timeout: 5s
-      retries: 20
-      start_period: 20s
+      retries: 30
+      start_period: 40s
 
   wordpress:
     image: wordpress:php8.2-apache

@@ -20,8 +20,19 @@ wait_for_wordpress() {
   done
 }
 
-run_compose down --remove-orphans 2>/dev/null || true
-run_compose up -d db wordpress
+run_compose up -d db
+
+for _ in $(seq 1 60); do
+  if run_compose ps --status running db 2>/dev/null | grep -q db; then
+    health="$(run_compose ps --format json db 2>/dev/null | grep -o '"Health":"[^"]*"' | head -1 || true)"
+    if [[ "$health" == *healthy* ]] || run_compose exec -T db mysqladmin ping -h localhost -uwordpress -pwordpress >/dev/null 2>&1; then
+      break
+    fi
+  fi
+  sleep 2
+done
+
+run_compose up -d wordpress
 wait_for_wordpress
 
 if ! wpcli core is-installed >/dev/null 2>&1; then
