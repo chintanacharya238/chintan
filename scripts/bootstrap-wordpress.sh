@@ -20,6 +20,7 @@ wait_for_wordpress() {
   done
 }
 
+run_compose down --remove-orphans 2>/dev/null || true
 run_compose up -d db wordpress
 wait_for_wordpress
 
